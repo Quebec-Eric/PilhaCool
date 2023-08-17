@@ -25,7 +25,7 @@ class Node {
 
 };
 
-class Stack inherits IO {
+class Stack inherits A2I {
     top : Node;
     
     init() : Stack {
@@ -49,6 +49,19 @@ class Stack inherits IO {
             retorno;
         }
     };
+
+    displayStack() : SELF_TYPE {
+        let current: Node <- top in
+        {
+            while not (current.getVal() = "F") loop
+                {
+                    (new IO).out_string(current.getVal()).out_string("\n");
+                    current <- current.getNextNode();
+                }
+            pool;
+            self;
+        }
+    };
    
 
 
@@ -58,9 +71,93 @@ class Stack inherits IO {
         fact;
         }
     };
-  
-  
+
+evaluateStack() : SELF_TYPE {
+    let current: Node <- top in
+    {
+        while not (current.getVal() = "F") loop
+            {
+                if not (current.getNextNode().getVal() = "F") then
+                    {
+                        if not (current.getNextNode().getNextNode().getVal() = "F") then
+                            let next: Node <- current.getNextNode() in
+                            let nextNext: Node <- next.getNextNode() in
+                            {
+                                if (next.getVal() = "+") then
+                                    let operand1: Int <- self.a2i(current.getVal()) in
+                                    let operand2: Int <- self.a2i(nextNext.getVal()) in
+                                    let result: Int <- operand1 + operand2 in
+                                    let resultStr: String <- self.i2a(result) in
+                                    {
+                                        current.init(resultStr, nextNext.getNextNode());
+                                    }
+                                else
+                                    current <- current.getNextNode()
+                                fi;
+                            }
+                        else
+                            current <- current.getNextNode()
+                        fi;
+                    }
+                else
+                    current <- current.getNextNode()
+                fi;
+            }
+        pool;
+        self;
+    }
 };
+
+
+isNumber(str: String) : Bool {
+    if (str = "0") then 
+        true
+    else 
+        if (str = "1") then 
+            true
+        else 
+            if (str = "2") then 
+                true
+            else 
+                if (str = "3") then 
+                    true
+                else 
+                    if (str = "4") then 
+                        true
+                    else 
+                        if (str = "5") then 
+                            true
+                        else 
+                            if (str = "6") then 
+                                true
+                            else 
+                                if (str = "7") then 
+                                    true
+                                else 
+                                    if (str = "8") then 
+                                        true
+                                    else 
+                                        if (str = "9") then 
+                                            true
+                                        else 
+                                            false
+                                        fi
+                                    fi
+                                fi
+                            fi
+                        fi
+                    fi
+                fi
+            fi
+        fi
+    fi
+};
+
+   
+};
+  
+  
+
 
 class Main inherits IO {
     eric:Stack;
@@ -68,6 +165,14 @@ class Main inherits IO {
     main() : Object {
         {
             eric <- new Stack.init();
+            out_string("\n--------------------------------- \n");
+            out_string("\n Acoes a se fazer na pilha \n");
+            out_string("\n (+), (INT), (s) , vao ser adicionados na pilha \n");
+            out_string("\n (e) Ver adiante na pilha e fazer a matematica \n");
+            out_string("\n (d) Exibir toda a pilha\n");
+            out_string("\n (t) Exibir topo da pilha\n");
+            out_string("\n (X) Finalizar o programa\n");
+            out_string("\n--------------------------------- \n");
             self.entradaDados();
         }
     };
@@ -77,14 +182,12 @@ class Main inherits IO {
         {
             while not (input_string = "X") loop
                 {
-                    if (input_string = "n") then
-                        self.mostraN(input_string)
+                    
+                    if (input_string = "+") then
+                        self.mostraN("+")
                     else
-                        if (input_string = "+") then
-                            self.mostraMais()
-                        else
                             if (input_string = "s") then
-                                self.mostraS()
+                                self.mostraN("s")
                             else
                                 if (input_string = "e") then
                                     self.mostraE()
@@ -92,11 +195,16 @@ class Main inherits IO {
                                     if (input_string = "d") then
                                         self.mostraD()
                                     else
-                                        out_string("Você inseriu: ".concat(input_string).concat("\n"))
+
+                                    if (input_string = "t") then
+                                        self.mostraMais()
+                                    else
+                                        self.mostraN(input_string)
+                                    fi    
                                     fi
                                 fi
                             fi
-                        fi
+                        
                     fi;
                     input_string <- in_string();
                 }
@@ -107,34 +215,42 @@ class Main inherits IO {
 
     mostraN(input_string : String) : Object {
         {
-           
-          eric.push("o dado e bonito");
+           out_string("\n--------------------------------- \n");
+           out_string("\n Adicionado o valor na pilha\n");
+           eric.push(input_string);
+           out_string("\n--------------------------------- \n");
                    
         }
     };
 
+    
+
     mostraMais() : Object {
         {
-            (new IO).out_string(eric.pop());   
-            out_string("Você inseriu '++++++++++++'.\n");
+            out_string("\n");
+            (new IO).out_string(eric.pop());
+            out_string("\n");   
+            
         }
     };
 
-    mostraS() : Object {
-        {
-            out_string("Você inseriu 'ssssssssssss'.\n");
-        }
-    };
+    
 
     mostraE() : Object {
         {
-            out_string("Você inseriu 'eeeeeeeeeeeeeeee'.\n");
+           out_string("\n--------------------------------- \n");
+           out_string("\n Ver Adiante na pilha\n");
+            eric.evaluateStack();
+            out_string("\n--------------------------------- \n");  
         }
     };
 
     mostraD() : Object {
         {
-            out_string("Você inseriu 'ddddddddddd'.\n");
+            out_string("\n--------------------------------- \n");
+           out_string("\n Mostrar a pilha \n");
+            eric.displayStack();
+            out_string("\n--------------------------------- \n"); 
         }
     };
 };
